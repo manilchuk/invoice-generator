@@ -272,9 +272,9 @@ export function InvoicePDF({ profile, client, invoice }: InvoicePDFProps) {
             <View key={index} style={styles.tableRow}>
               <Text style={[styles.tableCell, styles.colDescription]}>{item.description}</Text>
               <Text style={[styles.tableCell, styles.colQuantity]}>{item.quantity}</Text>
-              <Text style={[styles.tableCell, styles.colPrice]}>{formatMoney(item.price)} ₴</Text>
+              <Text style={[styles.tableCell, styles.colPrice]}>{formatMoney(item.price)} грн</Text>
               <Text style={[styles.tableCell, styles.colTotal]}>
-                {formatMoney(item.quantity * item.price)} ₴
+                {formatMoney(item.quantity * item.price)} грн
               </Text>
             </View>
           ))}
@@ -283,7 +283,7 @@ export function InvoicePDF({ profile, client, invoice }: InvoicePDFProps) {
         {/* ============ TOTAL ============ */}
         <View style={styles.totalBlock}>
           <Text style={styles.totalLabel}>ВСЬОГО ДО СПЛАТИ:</Text>
-          <Text style={styles.totalValue}>{formatMoney(invoice.total)} ₴</Text>
+          <Text style={styles.totalValue}>{formatMoney(invoice.total)} грн</Text>
         </View>
 
         {/* ============ NOTES ============ */}
