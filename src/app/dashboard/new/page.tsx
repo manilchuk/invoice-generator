@@ -34,14 +34,25 @@ export default async function NewInvoicePage() {
     .eq('user_id', user.id)
     .order('name', { ascending: true });
 
-  // 4. Отримуємо останній номер рахунку (для автогенерації)
-  const { data: lastInvoice } = await supabase
+  // 4. Обчислюємо наступний номер рахунку
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+
+  // Визначаємо початок і кінець поточного місяця
+  const monthStart = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01`;
+  const nextMonth = new Date(currentYear, currentMonth, 1);
+  const monthEnd = nextMonth.toISOString().split('T')[0];
+
+  // Рахуємо, скільки рахунків уже створено в цьому місяці
+  const { count } = await supabase
     .from('invoices')
-    .select('invoice_number')
+    .select('id', { count: 'exact', head: true })
     .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .gte('invoice_date', monthStart)
+    .lt('invoice_date', monthEnd);
+
+  const nextSequence = (count ?? 0) + 1;
 
   const clientOptions: ClientOption[] = clients ?? [];
 
@@ -52,7 +63,12 @@ export default async function NewInvoicePage() {
         <p className={styles.pageDescription}>Заповніть дані та створіть PDF-рахунок</p>
       </div>
 
-      <InvoiceForm clients={clientOptions} lastInvoiceNumber={lastInvoice?.invoice_number} />
+      <InvoiceForm
+        clients={clientOptions}
+        nextSequence={nextSequence}
+        currentYear={currentYear}
+        currentMonth={currentMonth}
+      />
     </>
   );
 }

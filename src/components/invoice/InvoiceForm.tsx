@@ -10,7 +10,7 @@ import { Alert } from '@/components/ui/Alert';
 import { ClientSelector } from './ClientSelector';
 import { ItemsTable } from './ItemsTable';
 import { saveInvoice } from '@/app/dashboard/new/actions';
-import type { ClientOption, InvoiceItem, InvoiceFormState } from '@/types/invoice';
+import type { ClientOption, InvoiceFormState } from '@/types/invoice';
 import styles from '@/app/dashboard/new/new.module.css';
 
 // ============================================
@@ -21,12 +21,11 @@ function todayISO(): string {
   return new Date().toISOString().split('T')[0];
 }
 
-function generateInvoiceNumber(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const random = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
-  return `${year}-${month}-${random}`;
+function buildInvoiceNumber(year: number, month: number, sequence: number): string {
+  const y = year;
+  const m = String(month).padStart(2, '0');
+  const s = String(sequence).padStart(4, '0');
+  return `${y}-${m}-${s}`;
 }
 
 // ============================================
@@ -35,14 +34,21 @@ function generateInvoiceNumber(): string {
 
 interface InvoiceFormProps {
   clients: ClientOption[];
-  lastInvoiceNumber?: string;
+  nextSequence: number;
+  currentYear: number;
+  currentMonth: number;
 }
 
 // ============================================
 // КОМПОНЕНТ
 // ============================================
 
-export function InvoiceForm({ clients, lastInvoiceNumber }: InvoiceFormProps) {
+export function InvoiceForm({
+  clients,
+  nextSequence,
+  currentYear,
+  currentMonth,
+}: InvoiceFormProps) {
   const router = useRouter();
 
   // === СТАН ФОРМИ ===
@@ -56,7 +62,7 @@ export function InvoiceForm({ clients, lastInvoiceNumber }: InvoiceFormProps) {
     clientEmail: '',
     clientAddress: '',
     clientTaxId: '',
-    invoiceNumber: lastInvoiceNumber ?? generateInvoiceNumber(),
+    invoiceNumber: buildInvoiceNumber(currentYear, currentMonth, nextSequence),
     invoiceDate: todayISO(),
     dueDate: '',
     items: [{ description: '', quantity: 1, price: 0, unit: 'шт' }],

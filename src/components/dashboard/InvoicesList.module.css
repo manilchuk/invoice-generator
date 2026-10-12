@@ -1,0 +1,197 @@
+.table {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* === HEADER === */
+.header {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 2fr 1.2fr 1.2fr 40px;
+  gap: 16px;
+  padding: 12px 20px;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* === ROW === */
+.row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 2fr 1.2fr 1.2fr 40px;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 14px;
+  color: var(--color-text);
+  text-decoration: none;
+  align-items: center;
+  transition: background 0.12s ease;
+  cursor: pointer;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row:hover {
+  background: var(--color-bg);
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+/* === CELLS === */
+.number {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.date {
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.client {
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.muted {
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-size: 13px;
+}
+
+.amount {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.arrow {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 16px;
+  opacity: 0;
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease;
+}
+
+.row:hover .arrow {
+  opacity: 1;
+  transform: translateX(2px);
+  color: var(--color-primary);
+}
+
+/* === HELPERS === */
+.colRight {
+  text-align: right;
+}
+
+.colCenter {
+  text-align: center;
+}
+
+/* === STATUS BADGE === */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.badge_draft {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.badge_sent {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.badge_paid {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+/* === EMPTY STATE === */
+.emptyState {
+  padding: 60px 20px;
+  text-align: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.emptyIcon {
+  font-size: 40px;
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+
+.emptyTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+
+.emptyDescription {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-bottom: 20px;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .header {
+    display: none;
+  }
+
+  .row {
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    padding: 14px 16px;
+    position: relative;
+  }
+
+  .row > .number {
+    grid-column: 1;
+    font-size: 15px;
+  }
+
+  .row > .arrow {
+    grid-column: 2;
+    grid-row: 1 / 4;
+    align-self: center;
+    opacity: 0.4;
+    font-size: 20px;
+  }
+
+  .row > .date,
+  .row > .client,
+  .row > .amount,
+  .row > .colCenter {
+    grid-column: 1;
+  }
+
+  .row > .amount {
+    font-size: 16px;
+    color: var(--color-primary);
+  }
+}
