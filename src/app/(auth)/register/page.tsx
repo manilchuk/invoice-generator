@@ -1,0 +1,108 @@
+'use client';
+
+import { useState, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Card } from '@/components/ui/Card';
+import { Alert } from '@/components/ui/Alert';
+import styles from '../auth.module.css';
+
+export default function RegisterPage() {
+  const router = useRouter();
+  const supabase = createClient();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    setError('');
+
+    if (password.length < 6) {
+      setError('Пароль має містити мінімум 6 символів');
+      return;
+    }
+
+    if (password !== confirm) {
+      setError('Пароли не співпадають');
+      return;
+    }
+
+    setLoading(true);
+
+    const { error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/dashboard`,
+      },
+    });
+
+    if (signUpError) {
+      setError(signUpError.message);
+      setLoading(false);
+      return;
+    }
+
+    router.push('/dashboard');
+    router.refresh();
+  }
+
+  return (
+    <Card>
+      <h1 className={styles.heading}>Реєстрація</h1>
+      <p className={styles.subheading}>Створіть акаунт за 30 секунд</p>
+
+      <form onSubmit={handleSubmit} className={styles.fields}>
+        {error && <Alert variant="error">{error}</Alert>}
+
+        <Input
+          label="Email"
+          type="email"
+          name="email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          autoComplete="email"
+        />
+
+        <Input
+          label="Пароль"
+          type="password"
+          name="password"
+          placeholder="Мінімум 6 символів"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          autoComplete="new-password"
+        />
+
+        <Input
+          label="Повторіть пароль"
+          type="password"
+          name="confirm"
+          placeholder="••••••••"
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          required
+          autoComplete="new-password"
+        />
+
+        <Button type="submit" fullWidth loading={loading}>
+          Зареєструватись
+        </Button>
+      </form>
+
+      <div className={styles.footer}>
+        Вже маєте акаунт? <Link href="/login">Увійти</Link>
+      </div>
+    </Card>
+  );
+}
