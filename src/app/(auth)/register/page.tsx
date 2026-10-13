@@ -18,11 +18,13 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError('');
+    setSuccess('');
 
     if (password.length < 6) {
       setError('Пароль має містити мінімум 6 символів');
@@ -50,8 +52,17 @@ export default function RegisterPage() {
       return;
     }
 
-    router.push('/dashboard');
-    router.refresh();
+    // Перевіряємо, чи одразу створилась сесія (email confirmation вимкнено)
+    // чи потрібно підтверджувати email (email confirmation увімкнено)
+    const { data } = await supabase.auth.getSession();
+
+    if (data.session) {
+      router.push('/dashboard');
+      router.refresh();
+    } else {
+      setSuccess('Реєстрація успішна! Перевірте вашу пошту та підтвердіть email — потім увійдіть.');
+      setLoading(false);
+    }
   }
 
   return (
@@ -61,6 +72,7 @@ export default function RegisterPage() {
 
       <form onSubmit={handleSubmit} className={styles.fields}>
         {error && <Alert variant="error">{error}</Alert>}
+        {success && <Alert variant="success">{success}</Alert>}
 
         <Input
           label="Email"
@@ -71,6 +83,7 @@ export default function RegisterPage() {
           onChange={(e) => setEmail(e.target.value)}
           required
           autoComplete="email"
+          disabled={!!success}
         />
 
         <Input
@@ -82,6 +95,7 @@ export default function RegisterPage() {
           onChange={(e) => setPassword(e.target.value)}
           required
           autoComplete="new-password"
+          disabled={!!success}
         />
 
         <Input
@@ -93,9 +107,10 @@ export default function RegisterPage() {
           onChange={(e) => setConfirm(e.target.value)}
           required
           autoComplete="new-password"
+          disabled={!!success}
         />
 
-        <Button type="submit" fullWidth loading={loading}>
+        <Button type="submit" fullWidth loading={loading} disabled={!!success}>
           Зареєструватись
         </Button>
       </form>
