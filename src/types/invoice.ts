@@ -68,3 +68,16 @@ export interface SaveInvoiceResult {
   invoiceId?: string;
   error?: string;
 }
+
+// ============================================
+// ТИПИ ДЛЯ АВТОРИЗАЦІЇ
+// ============================================
+
+export interface ForgotPasswordFormState {
+  email: string;
+}
+
+export interface ResetPasswordFormState {
+  password: string;
+  confirm: string;
+}

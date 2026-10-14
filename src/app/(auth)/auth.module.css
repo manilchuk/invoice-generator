@@ -49,3 +49,26 @@
   font-size: 13px;
   color: var(--color-text-muted);
 }
+
+/* === FORGOT / RESET PASSWORD === */
+.infoBox {
+  padding: 12px 14px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  line-height: 1.5;
+  border: 1px solid #bfdbfe;
+}
+
+.backLink {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.backLink a {
+  color: var(--color-primary);
+}

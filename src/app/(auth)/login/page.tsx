@@ -69,6 +69,12 @@ export default function LoginPage() {
           autoComplete="current-password"
         />
 
+        <div style={{ textAlign: 'right', marginTop: -8 }}>
+          <Link href="/forgot-password" style={{ fontSize: 13, color: 'var(--color-primary)' }}>
+            Забули пароль?
+          </Link>
+        </div>
+
         <Button type="submit" fullWidth loading={loading}>
           Увійти
         </Button>

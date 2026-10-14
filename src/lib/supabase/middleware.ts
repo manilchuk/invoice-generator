@@ -32,13 +32,12 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Якщо не залогований і не на сторінці логіну/реєстрації — редірект на /login
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/register') &&
-    !request.nextUrl.pathname.startsWith('/auth')
-  ) {
+  // Публічні шляхи, доступні без авторизації
+  const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password', '/auth'];
+  const isPublicPath = publicPaths.some((path) => request.nextUrl.pathname.startsWith(path));
+
+  // Якщо не залогований і на захищеній сторінці — редірект на /login
+  if (!user && !isPublicPath) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
