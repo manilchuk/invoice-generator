@@ -72,3 +72,8 @@
 .backLink a {
   color: var(--color-primary);
 }
+
+.authFooter {
+  margin-top: 24px;
+  text-align: center;
+}

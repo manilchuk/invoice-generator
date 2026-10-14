@@ -1,0 +1,57 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #fcd34d;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.button:hover {
+  background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+  text-decoration: none;
+  color: var(--color-text);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(252, 211, 77, 0.4);
+}
+
+.icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.label {
+  font-size: 13px;
+}
+
+/* Compact варіант — тільки іконка з коротким текстом */
+.compact {
+  padding: 6px 10px;
+  font-size: 12px;
+  gap: 4px;
+}
+
+.compact .icon {
+  font-size: 13px;
+}
+
+.compact .label {
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .label {
+    display: none;
+  }
+
+  .button {
+    padding: 8px 10px;
+  }
+}

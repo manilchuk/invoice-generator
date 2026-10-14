@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { SupportButton } from '@/components/ui/SupportButton';
 import styles from './auth.module.css';
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
@@ -9,6 +10,9 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           Invoice<span>Flow</span>
         </div>
         {children}
+        <div className={styles.authFooter}>
+          <SupportButton />
+        </div>
       </div>
     </div>
   );
