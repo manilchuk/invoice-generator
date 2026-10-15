@@ -1,0 +1,191 @@
+/* === GRID КАРТОЧОК === */
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* === КАРТОЧКА МЕТРИКИ === */
+.statCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.statLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.statValue {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.1;
+}
+
+.statValuePrimary {
+  color: var(--color-primary);
+}
+
+.statValueSuccess {
+  color: var(--color-success);
+}
+
+.statSub {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 6px;
+}
+
+/* === СЕКЦІЯ === */
+.section {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--color-text);
+}
+
+/* === СТАТУС-БЛОКИ === */
+.statusGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .statusGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.statusCard {
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.statusCardDraft {
+  border-color: #e5e7eb;
+  background: #f9fafb;
+}
+
+.statusCardSent {
+  border-color: #bfdbfe;
+  background: #dbeafe;
+}
+
+.statusCardPaid {
+  border-color: #bbf7d0;
+  background: var(--color-success-bg);
+}
+
+.statusName {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.statusCount {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.statusSum {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+/* === ТАБЛИЦЯ === */
+.table {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1.5fr;
+  gap: 16px;
+  padding: 12px 20px;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1.5fr;
+  gap: 16px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 14px;
+  align-items: center;
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.tableRowAmount {
+  font-weight: 600;
+}
+
+.tableRowDate {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+/* === BADGE СТАТУСУ === */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.badge_draft {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.badge_sent {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.badge_paid {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+/* === EMPTY STATE === */
+.empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}

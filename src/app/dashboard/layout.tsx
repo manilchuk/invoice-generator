@@ -28,6 +28,11 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           <Link href="/dashboard/settings" className={styles.navLink}>
             Реквізити
           </Link>
+          {user.email === process.env.ADMIN_EMAIL && (
+            <Link href="/dashboard/metrics" className={styles.navLink}>
+              Метрики
+            </Link>
+          )}
         </nav>
 
         <div className={styles.userMenu}>
