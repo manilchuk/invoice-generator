@@ -55,7 +55,13 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     color: '#2563eb',
-    marginBottom: 4,
+    marginBottom: 8,
+    lineHeight: 1.2,
+  },
+  invoiceMeta: {
+    marginTop: 6,
+    flexDirection: 'column',
+    alignItems: 'flex-end',
   },
   invoiceNumber: {
     fontSize: 11,
@@ -234,8 +240,10 @@ export function InvoicePDF({ profile, client, invoice }: InvoicePDFProps) {
 
           <View style={styles.headerRight}>
             <Text style={styles.invoiceTitle}>РАХУНОК</Text>
-            <Text style={styles.invoiceNumber}>№ {invoice.invoice_number}</Text>
-            <Text style={styles.invoiceDate}>від {formatDate(invoice.invoice_date)}</Text>
+            <View style={styles.invoiceMeta}>
+              <Text style={styles.invoiceNumber}>№ {invoice.invoice_number}</Text>
+              <Text style={styles.invoiceDate}>від {formatDate(invoice.invoice_date)}</Text>
+            </View>
           </View>
         </View>
 
