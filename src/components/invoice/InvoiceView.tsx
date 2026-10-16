@@ -1,4 +1,5 @@
 import { Card, CardHeader } from '@/components/ui/Card';
+import { Alert } from '@/components/ui/Alert';
 import { InvoiceActions } from './InvoiceActions';
 import type { InvoiceItem } from '@/types/invoice';
 import styles from '@/app/dashboard/invoices/[id]/view.module.css';
@@ -28,6 +29,8 @@ interface InvoiceViewProps {
     bank_name: string | null;
     iban: string | null;
   } | null;
+  justCreated?: boolean;
+  justUpdated?: boolean;
 }
 
 const STATUS_LABELS: Record<InvoiceStatus, string> = {
@@ -52,9 +55,19 @@ function formatDate(dateStr: string): string {
   }).format(date);
 }
 
-export function InvoiceView({ invoice, client, profile }: InvoiceViewProps) {
+export function InvoiceView({
+  invoice,
+  client,
+  profile,
+  justCreated = false,
+  justUpdated = false,
+}: InvoiceViewProps) {
   return (
     <div className={styles.layout}>
+      {/* ============ SUCCESS ALERTS ============ */}
+      {justCreated && <Alert variant="success">Рахунок успішно створено!</Alert>}
+      {justUpdated && <Alert variant="success">Рахунок успішно оновлено!</Alert>}
+
       {/* ============ TOP BAR ============ */}
       <div className={styles.topBar}>
         <div className={styles.titleBlock}>

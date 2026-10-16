@@ -7,10 +7,12 @@ export const instant = false;
 
 interface PageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ created?: string; updated?: string }>;
 }
 
-export default async function InvoicePage({ params }: PageProps) {
+export default async function InvoicePage({ params, searchParams }: PageProps) {
   const { id } = await params;
+  const { created, updated } = await searchParams;
   const supabase = await createClient();
 
   // 1. Авторизація
@@ -66,6 +68,8 @@ export default async function InvoicePage({ params }: PageProps) {
       }}
       client={client}
       profile={profile}
+      justCreated={created === '1'}
+      justUpdated={updated === '1'}
     />
   );
 }

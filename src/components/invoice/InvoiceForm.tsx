@@ -10,7 +10,8 @@ import { Alert } from '@/components/ui/Alert';
 import { ClientSelector } from './ClientSelector';
 import { ItemsTable } from './ItemsTable';
 import { saveInvoice } from '@/app/dashboard/new/actions';
-import type { ClientOption, InvoiceFormState } from '@/types/invoice';
+import { updateInvoice } from '@/app/dashboard/invoices/[id]/actions';
+import type { ClientOption, InvoiceFormState, InvoiceItem } from '@/types/invoice';
 import styles from '@/app/dashboard/new/new.module.css';
 
 // ============================================
@@ -32,11 +33,27 @@ function buildInvoiceNumber(year: number, month: number, sequence: number): stri
 // PROPS
 // ============================================
 
+interface InitialData {
+  id: string;
+  invoiceNumber: string;
+  invoiceDate: string;
+  dueDate: string;
+  items: InvoiceItem[];
+  notes: string;
+  clientId: string | null;
+  clientName: string | null;
+  clientEmail: string | null;
+  clientAddress: string | null;
+  clientTaxId: string | null;
+}
+
 interface InvoiceFormProps {
   clients: ClientOption[];
-  nextSequence: number;
-  currentYear: number;
-  currentMonth: number;
+  mode?: 'create' | 'edit';
+  initialData?: InitialData;
+  nextSequence?: number;
+  currentYear?: number;
+  currentMonth?: number;
 }
 
 // ============================================
@@ -45,28 +62,55 @@ interface InvoiceFormProps {
 
 export function InvoiceForm({
   clients,
+  mode = 'create',
+  initialData,
   nextSequence,
   currentYear,
   currentMonth,
 }: InvoiceFormProps) {
   const router = useRouter();
+  const isEdit = mode === 'edit';
 
-  // === СТАН ФОРМИ ===
+  // === ПОЧАТКОВИЙ СТАН ФОРМИ ===
   const [clientMode, setClientMode] = useState<'existing' | 'new'>(
-    clients.length > 0 ? 'existing' : 'new'
+    isEdit ? (initialData?.clientId ? 'existing' : 'new') : clients.length > 0 ? 'existing' : 'new'
   );
 
-  const [form, setForm] = useState<InvoiceFormState>({
-    clientId: '',
-    clientName: '',
-    clientEmail: '',
-    clientAddress: '',
-    clientTaxId: '',
-    invoiceNumber: buildInvoiceNumber(currentYear, currentMonth, nextSequence),
-    invoiceDate: todayISO(),
-    dueDate: '',
-    items: [{ description: '', quantity: 1, price: 0, unit: 'шт' }],
-    notes: '',
+  const [form, setForm] = useState<InvoiceFormState>(() => {
+    if (isEdit && initialData) {
+      return {
+        clientId: initialData.clientId ?? '',
+        clientName: initialData.clientName ?? '',
+        clientEmail: initialData.clientEmail ?? '',
+        clientAddress: initialData.clientAddress ?? '',
+        clientTaxId: initialData.clientTaxId ?? '',
+        invoiceNumber: initialData.invoiceNumber,
+        invoiceDate: initialData.invoiceDate,
+        dueDate: initialData.dueDate,
+        items:
+          initialData.items.length > 0
+            ? initialData.items
+            : [{ description: '', quantity: 1, price: 0, unit: 'шт' }],
+        notes: initialData.notes,
+      };
+    }
+
+    return {
+      clientId: '',
+      clientName: '',
+      clientEmail: '',
+      clientAddress: '',
+      clientTaxId: '',
+      invoiceNumber: buildInvoiceNumber(
+        currentYear ?? new Date().getFullYear(),
+        currentMonth ?? new Date().getMonth() + 1,
+        nextSequence ?? 1
+      ),
+      invoiceDate: todayISO(),
+      dueDate: '',
+      items: [{ description: '', quantity: 1, price: 0, unit: 'шт' }],
+      notes: '',
+    };
   });
 
   const [saving, setSaving] = useState(false);
@@ -130,6 +174,44 @@ export function InvoiceForm({
 
     setSaving(true);
 
+    // === РЕЖИМ РЕДАГУВАННЯ ===
+    if (isEdit && initialData) {
+      const result = await updateInvoice({
+        invoiceId: initialData.id,
+        clientMode,
+        clientId: form.clientId,
+        newClient:
+          clientMode === 'new'
+            ? {
+                name: form.clientName,
+                email: form.clientEmail,
+                address: form.clientAddress,
+                tax_id: form.clientTaxId,
+              }
+            : null,
+        invoiceNumber: form.invoiceNumber,
+        invoiceDate: form.invoiceDate,
+        dueDate: form.dueDate || null,
+        items: form.items,
+        total,
+        notes: form.notes || null,
+      });
+
+      if (!result.success) {
+        setError(result.error ?? 'Помилка оновлення');
+        setSaving(false);
+        return;
+      }
+
+      setSaving(false);
+      setTimeout(() => {
+        router.push(`/dashboard/invoices/${initialData.id}?updated=1`);
+        router.refresh();
+      }, 400);
+      return;
+    }
+
+    // === РЕЖИМ СТВОРЕННЯ ===
     const result = await saveInvoice({
       clientMode,
       clientId: form.clientId,
@@ -156,8 +238,9 @@ export function InvoiceForm({
       return;
     }
 
-    setSuccess('Рахунок створено!');
-    router.push(`/dashboard/invoices/${result.invoiceId}`);
+    setSaving(false);
+    router.push(`/dashboard/invoices/${result.invoiceId}?created=1`);
+    return;
   }
 
   // ============================================
@@ -191,7 +274,10 @@ export function InvoiceForm({
 
       {/* ============ ДАНІ РАХУНКУ ============ */}
       <Card padded={false}>
-        <CardHeader title="Рахунок" description="Номер та дати" />
+        <CardHeader
+          title="Рахунок"
+          description={isEdit ? 'Редагування рахунку' : 'Номер та дати'}
+        />
         <div style={{ padding: 24 }} className={styles.form}>
           <div className={styles.row3}>
             <Input
@@ -252,7 +338,7 @@ export function InvoiceForm({
         </Button>
         <div className={styles.actionsRight}>
           <Button type="submit" loading={saving} disabled={!canSubmit}>
-            Створити рахунок · {total.toFixed(2)} ₴
+            {isEdit ? 'Зберегти зміни' : 'Створити рахунок'} · {total.toFixed(2)} ₴
           </Button>
         </div>
       </div>

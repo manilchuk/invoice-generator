@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { updateInvoiceStatus, deleteInvoice } from '@/app/dashboard/invoices/[id]/actions';
 import styles from '@/app/dashboard/invoices/[id]/view.module.css';
@@ -67,6 +68,15 @@ export function InvoiceActions({ invoiceId, invoiceNumber, currentStatus }: Invo
 
   return (
     <div className={styles.actions}>
+      {/* EDIT (тільки для draft) */}
+      {status === 'draft' && (
+        <Link href={`/dashboard/invoices/${invoiceId}/edit`}>
+          <Button type="button" variant="secondary">
+            ✏️ Редагувати
+          </Button>
+        </Link>
+      )}
+
       {/* PDF */}
       <a href={`/api/invoices/${invoiceId}/pdf`} target="_blank" rel="noopener noreferrer">
         <Button type="button" variant="secondary">
