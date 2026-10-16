@@ -90,7 +90,7 @@ export function InvoiceActions({ invoiceId, invoiceNumber, currentStatus }: Invo
         onChange={(e) => handleStatusChange(e.target.value as InvoiceStatus)}
         disabled={updating}
         style={{
-          padding: '10px 12px',
+          padding: '10px 36px 10px 12px',
           border: '1px solid var(--color-border)',
           borderRadius: 'var(--radius-md)',
           background: 'var(--color-surface)',
@@ -98,6 +98,12 @@ export function InvoiceActions({ invoiceId, invoiceNumber, currentStatus }: Invo
           fontFamily: 'inherit',
           cursor: updating ? 'not-allowed' : 'pointer',
           opacity: updating ? 0.5 : 1,
+          appearance: 'none',
+          WebkitAppearance: 'none',
+          MozAppearance: 'none',
+          backgroundImage: `url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`,
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'right 12px center',
         }}
       >
         {(Object.keys(STATUS_LABELS) as InvoiceStatus[]).map((s) => (

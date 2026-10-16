@@ -204,10 +204,8 @@ export function InvoiceForm({
       }
 
       setSaving(false);
-      setTimeout(() => {
-        router.push(`/dashboard/invoices/${initialData.id}?updated=1`);
-        router.refresh();
-      }, 400);
+      router.push(`/dashboard/invoices/${initialData.id}?updated=1`);
+      router.refresh();
       return;
     }
 
