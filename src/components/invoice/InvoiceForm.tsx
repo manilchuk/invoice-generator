@@ -73,20 +73,33 @@ export function InvoiceForm({
 
   // === ПОЧАТКОВИЙ СТАН ФОРМИ ===
   const [clientMode, setClientMode] = useState<'existing' | 'new'>(
-    isEdit ? (initialData?.clientId ? 'existing' : 'new') : clients.length > 0 ? 'existing' : 'new'
+    initialData
+      ? initialData.clientId
+        ? 'existing'
+        : 'new'
+      : clients.length > 0
+        ? 'existing'
+        : 'new'
   );
 
   const [form, setForm] = useState<InvoiceFormState>(() => {
-    if (isEdit && initialData) {
+    if (initialData) {
+      // === РЕЖИМ КОПІЮВАННЯ або РЕДАГУВАННЯ ===
       return {
         clientId: initialData.clientId ?? '',
         clientName: initialData.clientName ?? '',
         clientEmail: initialData.clientEmail ?? '',
         clientAddress: initialData.clientAddress ?? '',
         clientTaxId: initialData.clientTaxId ?? '',
-        invoiceNumber: initialData.invoiceNumber,
-        invoiceDate: initialData.invoiceDate,
-        dueDate: initialData.dueDate,
+        invoiceNumber: isEdit
+          ? initialData.invoiceNumber
+          : buildInvoiceNumber(
+              currentYear ?? new Date().getFullYear(),
+              currentMonth ?? new Date().getMonth() + 1,
+              nextSequence ?? 1
+            ),
+        invoiceDate: isEdit ? initialData.invoiceDate : todayISO(),
+        dueDate: isEdit ? initialData.dueDate : '',
         items:
           initialData.items.length > 0
             ? initialData.items
@@ -95,6 +108,7 @@ export function InvoiceForm({
       };
     }
 
+    // === ЗВИЧАЙНЕ СТВОРЕННЯ ===
     return {
       clientId: '',
       clientName: '',

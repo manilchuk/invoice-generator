@@ -1,5 +1,6 @@
 import { Card, CardHeader } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';
+import { ScrollToTop } from '@/components/ui/ScrollToTop';
 import { InvoiceActions } from './InvoiceActions';
 import type { InvoiceItem } from '@/types/invoice';
 import styles from '@/app/dashboard/invoices/[id]/view.module.css';
@@ -64,6 +65,8 @@ export function InvoiceView({
 }: InvoiceViewProps) {
   return (
     <div className={styles.layout}>
+      {/* ============ SCROLL TO TOP ON SUCCESS ============ */}
+      {(justCreated || justUpdated) && <ScrollToTop />}
       {/* ============ SUCCESS ALERTS ============ */}
       {justCreated && <Alert variant="success">Рахунок успішно створено!</Alert>}
       {justUpdated && <Alert variant="success">Рахунок успішно оновлено!</Alert>}

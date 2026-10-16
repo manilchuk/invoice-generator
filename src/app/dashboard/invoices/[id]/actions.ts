@@ -1,7 +1,6 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
+import { revalidatePath, unstable_noStore as noStore } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import type { InvoiceItem } from '@/types/invoice';
 
@@ -42,11 +41,11 @@ export async function updateInvoiceStatus(
 }
 
 export async function deleteInvoice(invoiceId: string): Promise<ActionResult> {
+  noStore();
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
   if (!user) return { success: false, error: 'Не авторизовано' };
 
   const { error } = await supabase
@@ -60,8 +59,10 @@ export async function deleteInvoice(invoiceId: string): Promise<ActionResult> {
     return { success: false, error: error.message };
   }
 
+  revalidatePath('/dashboard', 'layout');
   revalidatePath('/dashboard');
-  redirect('/dashboard');
+  revalidatePath('/dashboard/invoices');
+  return { success: true };
 }
 
 interface UpdateInvoiceInput {

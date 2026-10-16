@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { connection } from 'next/server';
+import { unstable_noStore as noStore } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -8,6 +10,8 @@ import styles from './dashboard.module.css';
 export const instant = false;
 
 export default async function DashboardPage() {
+  await connection();
+  noStore();
   const supabase = await createClient();
   const {
     data: { user },

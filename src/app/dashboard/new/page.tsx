@@ -1,12 +1,21 @@
 import { redirect } from 'next/navigation';
+import { connection } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { InvoiceForm } from '@/components/invoice/InvoiceForm';
-import type { ClientOption } from '@/types/invoice';
+import type { ClientOption, InvoiceItem } from '@/types/invoice';
 import styles from '../dashboard.module.css';
 
 export const instant = false;
 
-export default async function NewInvoicePage() {
+interface PageProps {
+  searchParams: Promise<{ from?: string }>;
+}
+
+export default async function NewInvoicePage({ searchParams }: PageProps) {
+  const { from } = await searchParams;
+
+  await connection();
+
   const supabase = await createClient();
 
   // 1. Авторизація
@@ -39,12 +48,10 @@ export default async function NewInvoicePage() {
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1;
 
-  // Визначаємо початок і кінець поточного місяця
   const monthStart = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01`;
   const nextMonth = new Date(currentYear, currentMonth, 1);
   const monthEnd = nextMonth.toISOString().split('T')[0];
 
-  // Рахуємо, скільки рахунків уже створено в цьому місяці
   const { count } = await supabase
     .from('invoices')
     .select('id', { count: 'exact', head: true })
@@ -53,6 +60,55 @@ export default async function NewInvoicePage() {
     .lt('invoice_date', monthEnd);
 
   const nextSequence = (count ?? 0) + 1;
+
+  // 5. Якщо є ?from=[id] — підтягуємо дані копії
+  let initialData = undefined;
+
+  if (from) {
+    const { data: source } = await supabase
+      .from('invoices')
+      .select('*')
+      .eq('id', from)
+      .eq('user_id', user.id)
+      .single();
+
+    if (source) {
+      // Отримуємо клієнта
+      let clientName: string | null = null;
+      let clientEmail: string | null = null;
+      let clientAddress: string | null = null;
+      let clientTaxId: string | null = null;
+
+      if (source.client_id) {
+        const { data: client } = await supabase
+          .from('clients')
+          .select('name, email, address, tax_id')
+          .eq('id', source.client_id)
+          .single();
+
+        if (client) {
+          clientName = client.name;
+          clientEmail = client.email;
+          clientAddress = client.address;
+          clientTaxId = client.tax_id;
+        }
+      }
+
+      initialData = {
+        id: source.id,
+        invoiceNumber: '', // порожній — InvoiceForm згенерує новий
+        invoiceDate: '', // порожній — InvoiceForm підставить сьогодні
+        dueDate: '', // порожній — користувач встановить сам
+        items: (source.items as InvoiceItem[]) ?? [],
+        notes: source.notes ?? '',
+        clientId: source.client_id,
+        clientName,
+        clientEmail,
+        clientAddress,
+        clientTaxId,
+      };
+    }
+  }
 
   const clientOptions: ClientOption[] = clients ?? [];
 
@@ -65,6 +121,7 @@ export default async function NewInvoicePage() {
 
       <InvoiceForm
         clients={clientOptions}
+        initialData={initialData}
         nextSequence={nextSequence}
         currentYear={currentYear}
         currentMonth={currentMonth}

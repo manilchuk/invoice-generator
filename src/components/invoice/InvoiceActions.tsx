@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { updateInvoiceStatus, deleteInvoice } from '@/app/dashboard/invoices/[id]/actions';
@@ -21,6 +22,7 @@ const STATUS_LABELS: Record<InvoiceStatus, string> = {
 };
 
 export function InvoiceActions({ invoiceId, invoiceNumber, currentStatus }: InvoiceActionsProps) {
+  const router = useRouter();
   const [status, setStatus] = useState<InvoiceStatus>(currentStatus);
   const [updating, setUpdating] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -50,7 +52,6 @@ export function InvoiceActions({ invoiceId, invoiceNumber, currentStatus }: Invo
     const confirmed = window.confirm(
       `Ви впевнені, що хочете видалити рахунок № ${invoiceNumber}? Цю дію не можна скасувати.`
     );
-
     if (!confirmed) return;
 
     setDeleting(true);
@@ -58,12 +59,19 @@ export function InvoiceActions({ invoiceId, invoiceNumber, currentStatus }: Invo
 
     const result = await deleteInvoice(invoiceId);
 
-    // Якщо помилка — показуємо
     if (!result.success) {
       setError(result.error ?? 'Помилка видалення');
       setDeleting(false);
+      return;
     }
-    // Якщо успіх — redirect всередині Server Action
+
+    router.push('/dashboard');
+    router.refresh();
+  }
+
+  function handleDuplicate() {
+    // Просто редірект на сторінку створення з посиланням на джерело
+    router.push(`/dashboard/new?from=${invoiceId}`);
   }
 
   return (
@@ -84,13 +92,23 @@ export function InvoiceActions({ invoiceId, invoiceNumber, currentStatus }: Invo
         </Button>
       </a>
 
+      {/* DUPLICATE */}
+      <Button
+        type="button"
+        variant="secondary"
+        onClick={handleDuplicate}
+        disabled={updating || deleting}
+      >
+        📋 Дублювати
+      </Button>
+
       {/* STATUS DROPDOWN */}
       <select
         value={status}
         onChange={(e) => handleStatusChange(e.target.value as InvoiceStatus)}
         disabled={updating}
         style={{
-          padding: '10px 36px 10px 12px',
+          padding: '10px 36px 10px 18px',
           border: '1px solid var(--color-border)',
           borderRadius: 'var(--radius-md)',
           background: 'var(--color-surface)',

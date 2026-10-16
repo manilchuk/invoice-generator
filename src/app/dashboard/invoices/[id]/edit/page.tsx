@@ -1,4 +1,5 @@
 import { notFound, redirect } from 'next/navigation';
+import { connection } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { InvoiceForm } from '@/components/invoice/InvoiceForm';
 import type { ClientOption, InvoiceItem } from '@/types/invoice';
@@ -12,6 +13,9 @@ interface PageProps {
 
 export default async function EditInvoicePage({ params }: PageProps) {
   const { id } = await params;
+
+  await connection();
+
   const supabase = await createClient();
 
   // 1. Авторизація

@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
+import { connection } from 'next/server';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { LogoutButton } from '@/components/dashboard/LogoutButton';
@@ -7,6 +8,9 @@ import { SupportButton } from '@/components/ui/SupportButton';
 import styles from './dashboard.module.css';
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
+  // Явно позначаємо layout як динамічний (залежний від запиту)
+  await connection();
+
   const supabase = await createClient();
   const {
     data: { user },
