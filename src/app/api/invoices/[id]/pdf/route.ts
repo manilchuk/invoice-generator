@@ -80,6 +80,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
         items: (invoice.items as InvoiceItem[]) ?? [],
         total: Number(invoice.total),
         notes: invoice.notes,
+        vat_enabled: invoice.vat_enabled ?? false,
+        vat_amount: Number(invoice.vat_amount ?? 0),
       },
     });
 

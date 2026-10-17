@@ -13,6 +13,9 @@ export interface InvoiceProfile {
   address: string | null;
   logo_url: string | null;
   email: string | null;
+  phone: string | null;
+  manager_name: string | null;
+  signature_url: string | null;
 }
 
 export interface InvoiceClient {
@@ -30,6 +33,8 @@ export interface InvoiceData {
   items: InvoiceItem[];
   total: number;
   notes: string | null;
+  vat_enabled: boolean;
+  vat_amount: number;
 }
 
 export interface InvoicePDFProps {
@@ -61,6 +66,7 @@ export interface InvoiceFormState {
   dueDate: string; // YYYY-MM-DD або порожній
   items: InvoiceItem[];
   notes: string;
+  vatEnabled: boolean;
 }
 
 export interface SaveInvoiceResult {

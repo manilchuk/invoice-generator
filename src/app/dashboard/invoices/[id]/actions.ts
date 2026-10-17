@@ -81,6 +81,8 @@ interface UpdateInvoiceInput {
   items: InvoiceItem[];
   total: number;
   notes: string | null;
+  vat_enabled: boolean;
+  vat_amount: number;
 }
 
 export async function updateInvoice(
@@ -148,6 +150,8 @@ export async function updateInvoice(
         due_date: input.dueDate,
         items: input.items,
         total: input.total,
+        vat_enabled: input.vat_enabled,
+        vat_amount: input.vat_amount,
         notes: input.notes,
       })
       .eq('id', input.invoiceId)

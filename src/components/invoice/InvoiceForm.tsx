@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
+import { Checkbox } from '@/components/ui/Checkbox';
 import { Card, CardHeader } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';
 import { ClientSelector } from './ClientSelector';
@@ -45,6 +46,7 @@ interface InitialData {
   clientEmail: string | null;
   clientAddress: string | null;
   clientTaxId: string | null;
+  vatEnabled?: boolean;
 }
 
 interface InvoiceFormProps {
@@ -84,7 +86,6 @@ export function InvoiceForm({
 
   const [form, setForm] = useState<InvoiceFormState>(() => {
     if (initialData) {
-      // === РЕЖИМ КОПІЮВАННЯ або РЕДАГУВАННЯ ===
       return {
         clientId: initialData.clientId ?? '',
         clientName: initialData.clientName ?? '',
@@ -105,6 +106,7 @@ export function InvoiceForm({
             ? initialData.items
             : [{ description: '', quantity: 1, price: 0, unit: 'шт' }],
         notes: initialData.notes,
+        vatEnabled: isEdit ? (initialData.vatEnabled ?? false) : false,
       };
     }
 
@@ -124,6 +126,7 @@ export function InvoiceForm({
       dueDate: '',
       items: [{ description: '', quantity: 1, price: 0, unit: 'шт' }],
       notes: '',
+      vatEnabled: false,
     };
   });
 
@@ -173,6 +176,9 @@ export function InvoiceForm({
 
   const total = form.items.reduce((sum, item) => sum + item.quantity * item.price, 0);
 
+  const vatAmount = form.vatEnabled ? total * 0.2 : 0;
+  const totalWithVat = total + vatAmount;
+
   const canSubmit = validation.length === 0 && !saving;
 
   // === SUBMIT ===
@@ -207,8 +213,10 @@ export function InvoiceForm({
         invoiceDate: form.invoiceDate,
         dueDate: form.dueDate || null,
         items: form.items,
-        total,
+        total: totalWithVat,
         notes: form.notes || null,
+        vat_enabled: form.vatEnabled,
+        vat_amount: vatAmount,
       });
 
       if (!result.success) {
@@ -240,8 +248,10 @@ export function InvoiceForm({
       invoiceDate: form.invoiceDate,
       dueDate: form.dueDate || null,
       items: form.items,
-      total,
+      total: totalWithVat,
       notes: form.notes || null,
+      vat_enabled: form.vatEnabled,
+      vat_amount: vatAmount,
     });
 
     if (!result.success) {
@@ -325,6 +335,55 @@ export function InvoiceForm({
         <CardHeader title="Послуги" description="Додайте позиції рахунку" />
         <div style={{ padding: 24 }}>
           <ItemsTable items={form.items} onChange={(items) => updateForm('items', items)} />
+
+          {/* ПДВ */}
+          <div
+            style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--color-border)' }}
+          >
+            <Checkbox
+              label="Включити ПДВ (20%)"
+              name="vatEnabled"
+              checked={form.vatEnabled}
+              onChange={(e) => updateForm('vatEnabled', e.target.checked)}
+            />
+
+            {form.vatEnabled && (
+              <div
+                style={{
+                  marginTop: 12,
+                  padding: 12,
+                  background: 'var(--color-bg)',
+                  borderRadius: 'var(--radius-md)',
+                  fontSize: 13,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 6,
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--color-text-muted)' }}>Разом без ПДВ:</span>
+                  <span style={{ fontWeight: 600 }}>{total.toFixed(2)} ₴</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--color-text-muted)' }}>ПДВ (20%):</span>
+                  <span style={{ fontWeight: 600 }}>{vatAmount.toFixed(2)} ₴</span>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    paddingTop: 6,
+                    borderTop: '1px solid var(--color-border)',
+                  }}
+                >
+                  <span style={{ fontWeight: 600 }}>Всього з ПДВ:</span>
+                  <span style={{ fontWeight: 700, color: 'var(--color-primary)', fontSize: 15 }}>
+                    {totalWithVat.toFixed(2)} ₴
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </Card>
 
@@ -350,7 +409,7 @@ export function InvoiceForm({
         </Button>
         <div className={styles.actionsRight}>
           <Button type="submit" loading={saving} disabled={!canSubmit}>
-            {isEdit ? 'Зберегти зміни' : 'Створити рахунок'} · {total.toFixed(2)} ₴
+            {isEdit ? 'Зберегти зміни' : 'Створити рахунок'} · {totalWithVat.toFixed(2)} ₴
           </Button>
         </div>
       </div>

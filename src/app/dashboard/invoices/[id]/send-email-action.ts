@@ -91,6 +91,9 @@ export async function sendInvoiceEmail(
           address: profile.address,
           logo_url: profile.logo_url,
           email: profile.email,
+          phone: profile.phone,
+          manager_name: profile.manager_name,
+          signature_url: profile.signature_url,
         },
         client,
         invoice: {
@@ -101,6 +104,8 @@ export async function sendInvoiceEmail(
           items: (invoice.items as InvoiceItem[]) ?? [],
           total: Number(invoice.total),
           notes: invoice.notes,
+          vat_enabled: invoice.vat_enabled ?? false,
+          vat_amount: Number(invoice.vat_amount ?? 0),
         },
       });
     } catch (pdfError) {

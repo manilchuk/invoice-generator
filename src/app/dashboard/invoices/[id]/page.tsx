@@ -1,4 +1,5 @@
 import { notFound, redirect } from 'next/navigation';
+import { connection } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { InvoiceView } from '@/components/invoice/InvoiceView';
 import type { InvoiceItem } from '@/types/invoice';
@@ -12,6 +13,9 @@ interface PageProps {
 
 export default async function InvoicePage({ params, searchParams }: PageProps) {
   const { id } = await params;
+
+  await connection();
+
   const { created, updated } = await searchParams;
   const supabase = await createClient();
 

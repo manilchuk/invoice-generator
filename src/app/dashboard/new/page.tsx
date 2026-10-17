@@ -106,6 +106,7 @@ export default async function NewInvoicePage({ searchParams }: PageProps) {
         clientEmail,
         clientAddress,
         clientTaxId,
+        vatEnabled: source.vat_enabled ?? false,
       };
     }
   }

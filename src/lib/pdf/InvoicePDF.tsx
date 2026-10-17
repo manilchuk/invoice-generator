@@ -1,6 +1,7 @@
 import React from 'react';
 import { Document, Page, Text, View, Image, StyleSheet } from '@react-pdf/renderer';
 import type { InvoicePDFProps } from '@/types/invoice';
+import { amountToWords } from '@/lib/utils/amountToWords';
 
 // ============================================
 // СТИЛІ
@@ -11,7 +12,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     padding: 40,
     color: '#111827',
-    lineHeight: 1.4,
   },
 
   // === HEADER ===
@@ -19,10 +19,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 30,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    marginBottom: 20,
   },
   headerLeft: {
     flexDirection: 'column',
@@ -31,168 +28,199 @@ const styles = StyleSheet.create({
   headerRight: {
     flexDirection: 'column',
     alignItems: 'flex-end',
+    maxWidth: 200,
   },
   logo: {
-    width: 70,
-    height: 70,
+    width: 80,
+    height: 80,
     objectFit: 'contain',
     marginBottom: 8,
   },
   companyName: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: 'bold',
-    marginBottom: 4,
-    color: '#111827',
+    marginBottom: 2,
   },
   companyDetail: {
     fontSize: 9,
-    color: '#6b7280',
-    marginBottom: 2,
+    color: '#374151',
+    marginBottom: 1,
   },
 
-  // === INVOICE TITLE ===
-  invoiceTitle: {
-    fontSize: 22,
+  // === TITLE ===
+  titleBlock: {
+    marginTop: 10,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#2563eb',
-    marginBottom: 8,
-    lineHeight: 1.2,
-  },
-  invoiceMeta: {
-    marginTop: 6,
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-  },
-  invoiceNumber: {
-    fontSize: 11,
-    color: '#6b7280',
     marginBottom: 2,
   },
-  invoiceDate: {
-    fontSize: 9,
-    color: '#6b7280',
+  titleDate: {
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 
-  // === INFO BLOCK (client + details) ===
-  infoBlock: {
+  // === INFO ROW ===
+  infoRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 25,
-    gap: 20,
-  },
-  infoColumn: {
-    flex: 1,
+    marginBottom: 10,
   },
   infoLabel: {
-    fontSize: 8,
-    color: '#6b7280',
-    textTransform: 'uppercase',
-    marginBottom: 4,
-    letterSpacing: 0.5,
+    fontSize: 10,
+    fontWeight: 'bold',
+    width: 110,
   },
   infoValue: {
     fontSize: 10,
-    color: '#111827',
-    marginBottom: 2,
-  },
-  infoValueBold: {
-    fontSize: 10,
-    color: '#111827',
-    fontWeight: 'bold',
-    marginBottom: 2,
+    flex: 1,
   },
 
   // === TABLE ===
   table: {
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 10,
+    borderTopWidth: 1,
+    borderLeftWidth: 1,
+    borderColor: '#000',
   },
   tableHeader: {
     flexDirection: 'row',
     backgroundColor: '#f3f4f6',
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderTopLeftRadius: 4,
-    borderTopRightRadius: 4,
+    borderBottomWidth: 1,
+    borderColor: '#000',
   },
   tableHeaderCell: {
     fontSize: 8,
     fontWeight: 'bold',
-    color: '#374151',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    padding: 6,
+    textAlign: 'center',
+    borderRightWidth: 1,
+    borderColor: '#000',
   },
   tableRow: {
     flexDirection: 'row',
-    paddingVertical: 9,
-    paddingHorizontal: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderColor: '#000',
   },
   tableCell: {
-    fontSize: 10,
-    color: '#111827',
+    fontSize: 9,
+    padding: 6,
+    borderRightWidth: 1,
+    borderColor: '#000',
   },
-
-  colDescription: { flex: 5 },
-  colQuantity: { flex: 1, textAlign: 'center' },
-  colPrice: { flex: 2, textAlign: 'right' },
-  colTotal: { flex: 2, textAlign: 'right' },
-
-  // === TOTAL ===
-  totalBlock: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 5,
+  tableCellCenter: {
+    textAlign: 'center',
   },
-  totalLabel: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#6b7280',
-    marginRight: 20,
-    paddingTop: 8,
-  },
-  totalValue: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2563eb',
-    paddingTop: 6,
-    minWidth: 120,
+  tableCellRight: {
     textAlign: 'right',
   },
 
-  // === NOTES ===
-  notesBlock: {
-    marginTop: 30,
-    paddingTop: 15,
-    borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+  // Ширини колонок (відсотки)
+  colNum: { width: '5%' },
+  colName: { width: '35%' },
+  colUnit: { width: '10%' },
+  colQty: { width: '8%' },
+  colPrice: { width: '21%' },
+  colSum: { width: '21%' },
+
+  // === TOTALS ===
+  totalsBlock: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 0, // ← прибрали відступ, щоб приєднати до таблиці
+    marginBottom: 20,
   },
-  notesLabel: {
-    fontSize: 8,
-    color: '#6b7280',
-    textTransform: 'uppercase',
-    marginBottom: 6,
-    letterSpacing: 0.5,
+  totalsTable: {
+    width: '42%',
   },
-  notesText: {
+  totalsRow: {
+    flexDirection: 'row',
+  },
+  totalsRowLast: {
+    flexDirection: 'row',
+  },
+  totalsLabel: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    padding: 6,
+    flex: 1,
+    textAlign: 'right',
+  },
+  totalsValue: {
+    fontSize: 9,
+    padding: 6,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#000',
+    width: '50%',
+    textAlign: 'right',
+  },
+
+  // === AMOUNT IN WORDS ===
+  amountInWordsBlock: {
+    marginBottom: 20,
+  },
+  amountInWordsLabel: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    marginBottom: 2,
+  },
+  amountInWords: {
+    fontSize: 10,
+    marginBottom: 4,
+  },
+
+  // === MANAGER CONTACTS ===
+  managerBlock: {
+    marginBottom: 20,
+  },
+  managerText: {
     fontSize: 9,
     color: '#374151',
-    lineHeight: 1.5,
+  },
+
+  // === SIGNATURE ===
+  signatureBlock: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    marginTop: 20,
+    paddingTop: 10,
+  },
+  signatureLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  signatureLabel: {
+    fontSize: 9,
+  },
+  signatureImage: {
+    width: 100,
+    height: 50,
+    objectFit: 'contain',
+  },
+  signatureRight: {
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+  },
+  signatureManager: {
+    fontSize: 10,
   },
 
   // === FOOTER ===
   footer: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 20,
     left: 40,
     right: 40,
-    fontSize: 8,
+    fontSize: 7,
     color: '#9ca3af',
     textAlign: 'center',
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
   },
 });
 
@@ -219,14 +247,17 @@ function formatDate(dateStr: string): string {
 // КОМПОНЕНТ
 // ============================================
 export function InvoicePDF({ profile, client, invoice }: InvoicePDFProps) {
+  // Обчислення сум
+  const totalWithoutVat = invoice.total - invoice.vat_amount;
+
   return (
     <Document
-      title={`Рахунок ${invoice.invoice_number}`}
+      title={`Рахунок-фактура № ${invoice.invoice_number}`}
       author={profile.company_name ?? 'InvoiceFlow'}
       creator="InvoiceFlow"
     >
       <Page size="A4" style={styles.page}>
-        {/* ============ HEADER ============ */}
+        {/* ============ HEADER (ЛОГО + РЕКВІЗИТИ) ============ */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             {profile.logo_url && <Image src={profile.logo_url} style={styles.logo} />}
@@ -235,77 +266,136 @@ export function InvoicePDF({ profile, client, invoice }: InvoicePDFProps) {
               <Text style={styles.companyDetail}>ІПН/ЄДРПОУ: {profile.tax_id}</Text>
             )}
             {profile.address && <Text style={styles.companyDetail}>{profile.address}</Text>}
+            {profile.iban && <Text style={styles.companyDetail}>IBAN: {profile.iban}</Text>}
+            {profile.bank_name && (
+              <Text style={styles.companyDetail}>Банк: {profile.bank_name}</Text>
+            )}
             {profile.email && <Text style={styles.companyDetail}>{profile.email}</Text>}
           </View>
 
           <View style={styles.headerRight}>
-            <Text style={styles.invoiceTitle}>РАХУНОК</Text>
-            <View style={styles.invoiceMeta}>
-              <Text style={styles.invoiceNumber}>№ {invoice.invoice_number}</Text>
-              <Text style={styles.invoiceDate}>від {formatDate(invoice.invoice_date)}</Text>
-            </View>
+            {profile.phone && <Text style={styles.companyDetail}>тел. {profile.phone}</Text>}
           </View>
         </View>
 
-        {/* ============ INFO BLOCK ============ */}
-        <View style={styles.infoBlock}>
-          <View style={styles.infoColumn}>
-            <Text style={styles.infoLabel}>Отримувач</Text>
-            <Text style={styles.infoValueBold}>{client.name}</Text>
-            {client.tax_id && <Text style={styles.infoValue}>ІПН: {client.tax_id}</Text>}
-            {client.address && <Text style={styles.infoValue}>{client.address}</Text>}
-            {client.email && <Text style={styles.infoValue}>{client.email}</Text>}
-          </View>
-
-          <View style={styles.infoColumn}>
-            <Text style={styles.infoLabel}>Реквізити оплати</Text>
-            {profile.bank_name && <Text style={styles.infoValue}>Банк: {profile.bank_name}</Text>}
-            {profile.iban && <Text style={styles.infoValue}>IBAN: {profile.iban}</Text>}
-            {invoice.due_date && (
-              <Text style={styles.infoValueBold}>Сплатити до: {formatDate(invoice.due_date)}</Text>
-            )}
-          </View>
+        {/* ============ TITLE ============ */}
+        <View style={styles.titleBlock}>
+          <Text style={styles.title}>Рахунок-фактура № {invoice.invoice_number}</Text>
+          <Text style={styles.titleDate}>від {formatDate(invoice.invoice_date)}</Text>
         </View>
+
+        {/* ============ INFO: ПЛАТНИК + СТРОК ============ */}
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Платник:</Text>
+          <Text style={styles.infoValue}>
+            {client ? client.name : '—'}
+            {client?.tax_id ? ` (ІПН: ${client.tax_id})` : ''}
+          </Text>
+        </View>
+
+        {invoice.due_date && (
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Сплатити до:</Text>
+            <Text style={styles.infoValue}>{formatDate(invoice.due_date)}</Text>
+          </View>
+        )}
 
         {/* ============ TABLE ============ */}
         <View style={styles.table}>
+          {/* Header */}
           <View style={styles.tableHeader}>
-            <Text style={[styles.tableHeaderCell, styles.colDescription]}>Опис послуги</Text>
-            <Text style={[styles.tableHeaderCell, styles.colQuantity]}>К-сть</Text>
-            <Text style={[styles.tableHeaderCell, styles.colPrice]}>Ціна</Text>
-            <Text style={[styles.tableHeaderCell, styles.colTotal]}>Сума</Text>
+            <Text style={[styles.tableHeaderCell, styles.colNum]}>№</Text>
+            <Text style={[styles.tableHeaderCell, styles.colName]}>Товар/Послуга</Text>
+            <Text style={[styles.tableHeaderCell, styles.colUnit]}>Од.вим.</Text>
+            <Text style={[styles.tableHeaderCell, styles.colQty]}>К-сть</Text>
+            <Text style={[styles.tableHeaderCell, styles.colPrice]}>Ціна без ПДВ</Text>
+            <Text style={[styles.tableHeaderCell, styles.colSum]}>Сума без ПДВ</Text>
           </View>
 
+          {/* Rows */}
           {invoice.items.map((item, index) => (
             <View key={index} style={styles.tableRow}>
-              <Text style={[styles.tableCell, styles.colDescription]}>{item.description}</Text>
-              <Text style={[styles.tableCell, styles.colQuantity]}>{item.quantity}</Text>
-              <Text style={[styles.tableCell, styles.colPrice]}>{formatMoney(item.price)} грн</Text>
-              <Text style={[styles.tableCell, styles.colTotal]}>
-                {formatMoney(item.quantity * item.price)} грн
+              <Text style={[styles.tableCell, styles.tableCellCenter, styles.colNum]}>
+                {index + 1}
+              </Text>
+              <Text style={[styles.tableCell, styles.colName]}>{item.description}</Text>
+              <Text style={[styles.tableCell, styles.tableCellCenter, styles.colUnit]}>
+                {item.unit || 'шт'}
+              </Text>
+              <Text style={[styles.tableCell, styles.tableCellCenter, styles.colQty]}>
+                {item.quantity}
+              </Text>
+              <Text style={[styles.tableCell, styles.tableCellRight, styles.colPrice]}>
+                {formatMoney(item.price)}
+              </Text>
+              <Text style={[styles.tableCell, styles.tableCellRight, styles.colSum]}>
+                {formatMoney(item.quantity * item.price)}
               </Text>
             </View>
           ))}
         </View>
 
-        {/* ============ TOTAL ============ */}
-        <View style={styles.totalBlock}>
-          <Text style={styles.totalLabel}>ВСЬОГО ДО СПЛАТИ:</Text>
-          <Text style={styles.totalValue}>{formatMoney(invoice.total)} грн</Text>
+        {/* ============ TOTALS ============ */}
+        <View style={styles.totalsBlock}>
+          <View style={styles.totalsTable}>
+            <View style={styles.totalsRow}>
+              <Text style={styles.totalsLabel}>Разом без ПДВ:</Text>
+              <Text style={styles.totalsValue}>{formatMoney(totalWithoutVat)}</Text>
+            </View>
+            <View style={styles.totalsRow}>
+              <Text style={styles.totalsLabel}>ПДВ 20%:</Text>
+              <Text style={styles.totalsValue}>{formatMoney(invoice.vat_amount)}</Text>
+            </View>
+            <View style={styles.totalsRowLast}>
+              <Text style={styles.totalsLabel}>Всього з ПДВ:</Text>
+              <Text style={styles.totalsValue}>{formatMoney(invoice.total)}</Text>
+            </View>
+          </View>
         </View>
 
-        {/* ============ NOTES ============ */}
-        {invoice.notes && (
-          <View style={styles.notesBlock}>
-            <Text style={styles.notesLabel}>Примітки</Text>
-            <Text style={styles.notesText}>{invoice.notes}</Text>
+        {/* ============ AMOUNT IN WORDS ============ */}
+        <View style={styles.amountInWordsBlock}>
+          <Text style={styles.amountInWordsLabel}>Всього на суму:</Text>
+          <Text style={styles.amountInWords}>{amountToWords(invoice.total)}</Text>
+
+          {invoice.vat_enabled && (
+            <Text style={styles.amountInWords}>ПДВ: {formatMoney(invoice.vat_amount)} грн</Text>
+          )}
+        </View>
+
+        {/* ============ MANAGER CONTACTS ============ */}
+        {profile.phone && (
+          <View style={styles.managerBlock}>
+            <Text style={styles.managerText}>Контакти менеджера: {profile.phone}</Text>
           </View>
         )}
 
+        {/* ============ NOTES ============ */}
+        {invoice.notes && (
+          <View style={{ marginBottom: 20 }}>
+            <Text style={{ fontSize: 9, color: '#374151' }}>Примітки: {invoice.notes}</Text>
+          </View>
+        )}
+
+        {/* ============ SIGNATURE ============ */}
+        <View style={styles.signatureBlock}>
+          <View style={styles.signatureLeft}>
+            <Text style={styles.signatureLabel}>Виписав(-ла)</Text>
+            {profile.signature_url && (
+              <Image src={profile.signature_url} style={styles.signatureImage} />
+            )}
+          </View>
+
+          {profile.manager_name && (
+            <View style={styles.signatureRight}>
+              <Text style={styles.signatureManager}>{profile.manager_name}</Text>
+            </View>
+          )}
+        </View>
+
         {/* ============ FOOTER ============ */}
         <Text style={styles.footer} fixed>
-          Рахунок № {invoice.invoice_number} від {formatDate(invoice.invoice_date)} • Створено в
-          InvoiceFlow
+          Створено в InvoiceFlow • fopdop.xyz
         </Text>
       </Page>
     </Document>

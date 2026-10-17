@@ -100,6 +100,7 @@ export default async function EditInvoicePage({ params }: PageProps) {
           clientEmail,
           clientAddress,
           clientTaxId,
+          vatEnabled: invoice.vat_enabled ?? false,
         }}
       />
     </>
