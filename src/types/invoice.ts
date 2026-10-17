@@ -81,3 +81,19 @@ export interface ResetPasswordFormState {
   password: string;
   confirm: string;
 }
+
+// ============================================
+// ТИПИ ДЛЯ EMAIL-РОЗСИЛКИ
+// ============================================
+
+export interface SendInvoiceEmailInput {
+  invoiceId: string;
+  recipientEmail: string;
+  recipientName: string;
+  customMessage?: string;
+}
+
+export interface SendInvoiceEmailResult {
+  success: boolean;
+  error?: string;
+}

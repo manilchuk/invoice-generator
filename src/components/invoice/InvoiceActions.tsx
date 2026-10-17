@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { updateInvoiceStatus, deleteInvoice } from '@/app/dashboard/invoices/[id]/actions';
+import { SendInvoiceModal } from './SendInvoiceModal';
 import styles from '@/app/dashboard/invoices/[id]/view.module.css';
 
 type InvoiceStatus = 'draft' | 'sent' | 'paid';
@@ -13,6 +14,8 @@ interface InvoiceActionsProps {
   invoiceId: string;
   invoiceNumber: string;
   currentStatus: InvoiceStatus;
+  clientEmail: string | null;
+  onSentSuccess?: () => void;
 }
 
 const STATUS_LABELS: Record<InvoiceStatus, string> = {
@@ -21,9 +24,16 @@ const STATUS_LABELS: Record<InvoiceStatus, string> = {
   paid: 'Оплачено',
 };
 
-export function InvoiceActions({ invoiceId, invoiceNumber, currentStatus }: InvoiceActionsProps) {
+export function InvoiceActions({
+  invoiceId,
+  invoiceNumber,
+  currentStatus,
+  clientEmail,
+  onSentSuccess,
+}: InvoiceActionsProps) {
   const router = useRouter();
   const [status, setStatus] = useState<InvoiceStatus>(currentStatus);
+  const [showSendModal, setShowSendModal] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState('');
@@ -92,6 +102,17 @@ export function InvoiceActions({ invoiceId, invoiceNumber, currentStatus }: Invo
         </Button>
       </a>
 
+      {status !== 'paid' && (
+        <Button
+          type="button"
+          variant="primary"
+          onClick={() => setShowSendModal(true)}
+          disabled={updating || deleting}
+        >
+          📧 Надіслати
+        </Button>
+      )}
+
       {/* DUPLICATE */}
       <Button
         type="button"
@@ -157,6 +178,18 @@ export function InvoiceActions({ invoiceId, invoiceNumber, currentStatus }: Invo
         >
           {error}
         </div>
+      )}
+      {showSendModal && (
+        <SendInvoiceModal
+          invoiceId={invoiceId}
+          invoiceNumber={invoiceNumber}
+          defaultEmail={clientEmail}
+          onClose={() => setShowSendModal(false)}
+          onSuccess={() => {
+            onSentSuccess?.();
+            router.refresh();
+          }}
+        />
       )}
     </div>
   );

@@ -101,6 +101,7 @@ export function InvoiceView({
           invoiceId={invoice.id}
           invoiceNumber={invoice.invoice_number}
           currentStatus={invoice.status}
+          clientEmail={client?.email ?? null}
         />
       </div>
 
