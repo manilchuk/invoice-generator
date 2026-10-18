@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   signatureBlock: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
+    alignItems: 'center', // ← зміни flex-end на center
     marginTop: 20,
     paddingTop: 10,
   },

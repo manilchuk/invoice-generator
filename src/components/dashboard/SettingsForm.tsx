@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, type SyntheticEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
@@ -136,7 +136,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
     router.refresh();
   }
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: SyntheticEvent) {
     e.preventDefault();
     setError('');
     setSuccess('');
@@ -164,6 +164,8 @@ export function SettingsForm({ profile }: SettingsFormProps) {
     setSuccess('Збережено!');
     setSaving(false);
     router.refresh();
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     setTimeout(() => setSuccess(''), 3000);
   }
@@ -275,11 +277,13 @@ export function SettingsForm({ profile }: SettingsFormProps) {
               onChange={(e) => update('tax_id', e.target.value)}
             />
             <Input
-              label="IBAN / Номер картки"
+              label="IBAN / Номер картки *"
               name="iban"
               placeholder="UA12 3456 7890 1234 5678 9012 3456 7"
               value={form.iban}
               onChange={(e) => update('iban', e.target.value)}
+              required
+              hint="Обов'язково для створення рахунків"
             />
           </div>
 

@@ -1,0 +1,20 @@
+{
+  "version": "0.2",
+  "language": "en,uk",
+  "words": [
+    "supabase",
+    "InvoiceFlow",
+    "fopdop",
+    "resend",
+    "vercel",
+    "liqpay",
+    "monobank",
+    "iban",
+    "ipn",
+    "edrpou",
+    "пдв",
+    "рахунок",
+    "рахунку"
+  ],
+  "ignorePaths": ["node_modules", ".next", "package-lock.json"]
+}

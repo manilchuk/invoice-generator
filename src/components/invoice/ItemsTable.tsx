@@ -56,8 +56,19 @@ export function ItemsTable({ items, onChange }: ItemsTableProps) {
               type="number"
               min="0"
               step="0.01"
-              value={item.price}
+              value={item.price === 0 ? '' : item.price}
+              onFocus={(e) => {
+                if (e.target.value === '0') {
+                  e.target.value = '';
+                }
+              }}
               onChange={(e) => updateItem(index, 'price', parseFloat(e.target.value) || 0)}
+              onBlur={(e) => {
+                if (e.target.value === '') {
+                  updateItem(index, 'price', 0);
+                }
+              }}
+              placeholder="0"
             />
 
             <Input
