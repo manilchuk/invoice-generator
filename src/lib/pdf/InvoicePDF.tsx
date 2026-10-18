@@ -370,7 +370,7 @@ export function InvoicePDF({ profile, client, invoice }: InvoicePDFProps) {
               <Text style={styles.totalsValue}>{formatMoney(totalWithoutVat)}</Text>
             </View>
             <View style={styles.totalsRow}>
-              <Text style={styles.totalsLabel}>ПДВ 20%:</Text>
+              <Text style={styles.totalsLabel}>ПДВ:</Text>
               <Text style={styles.totalsValue}>{formatMoney(invoice.vat_amount)}</Text>
             </View>
             <View style={styles.totalsRowLast}>
