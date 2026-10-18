@@ -14,6 +14,7 @@ export interface AppStats {
 }
 
 export interface RecentInvoice {
+  id: string;
   invoice_number: string;
   total: number;
   status: 'draft' | 'sent' | 'paid';

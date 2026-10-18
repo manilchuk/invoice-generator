@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { connection } from 'next/server';
 import { Card, CardHeader } from '@/components/ui/Card';
 import { getMetrics } from './actions';
 import styles from './metrics.module.css';
@@ -30,6 +31,8 @@ function formatDate(dateStr: string): string {
 }
 
 export default async function MetricsPage() {
+  await connection();
+
   const result = await getMetrics();
 
   // Якщо не адмін — редірект на dashboard
@@ -118,7 +121,7 @@ export default async function MetricsPage() {
               <div>Дата</div>
             </div>
             {recentInvoices.map((inv) => (
-              <div key={inv.invoice_number} className={styles.tableRow}>
+              <div key={inv.id} className={styles.tableRow}>
                 <div>№ {inv.invoice_number}</div>
                 <div className={styles.tableRowAmount}>{formatMoney(inv.total)} ₴</div>
                 <div>
