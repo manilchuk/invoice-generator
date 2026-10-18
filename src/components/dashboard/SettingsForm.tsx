@@ -26,9 +26,10 @@ interface Profile {
 
 interface SettingsFormProps {
   profile: Profile;
+  userEmail: string;
 }
 
-export function SettingsForm({ profile }: SettingsFormProps) {
+export function SettingsForm({ profile, userEmail }: SettingsFormProps) {
   const router = useRouter();
   const supabase = createClient();
 
@@ -40,6 +41,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
     address: profile.address ?? '',
     phone: profile.phone ?? '',
     manager_name: profile.manager_name ?? '',
+    email: profile.email ?? userEmail ?? '',
   });
 
   const [logoUrl, setLogoUrl] = useState<string | null>(profile.logo_url);
@@ -152,6 +154,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
         address: form.address || null,
         phone: form.phone || null,
         manager_name: form.manager_name || null,
+        email: form.email || null,
       })
       .eq('id', profile.id);
 
@@ -293,6 +296,16 @@ export function SettingsForm({ profile }: SettingsFormProps) {
             placeholder="ПриватБанк"
             value={form.bank_name}
             onChange={(e) => update('bank_name', e.target.value)}
+          />
+
+          <Input
+            label="Email для рахунків"
+            name="email"
+            type="email"
+            placeholder="company@example.com"
+            value={form.email}
+            onChange={(e) => update('email', e.target.value)}
+            hint="За замовчуванням — email акаунту. Можна змінити"
           />
 
           <Textarea

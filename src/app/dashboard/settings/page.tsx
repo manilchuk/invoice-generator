@@ -1,3 +1,4 @@
+import { connection } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { SettingsForm } from '@/components/dashboard/SettingsForm';
 import styles from '../dashboard.module.css';
@@ -5,6 +6,8 @@ import styles from '../dashboard.module.css';
 export const instant = false;
 
 export default async function SettingsPage() {
+  await connection();
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -23,7 +26,7 @@ export default async function SettingsPage() {
         <p className={styles.pageDescription}>Ці дані використовуються при створенні рахунків</p>
       </div>
 
-      <SettingsForm profile={profile} />
+      <SettingsForm profile={profile} userEmail={user!.email ?? ''} />
     </>
   );
 }

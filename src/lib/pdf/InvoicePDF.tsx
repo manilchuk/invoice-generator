@@ -290,6 +290,7 @@ export function InvoicePDF({ profile, client, invoice }: InvoicePDFProps) {
                 {profile.bank_name && (
                   <Text style={styles.infoValue}>Банк {profile.bank_name}</Text>
                 )}
+                {profile.email && <Text style={styles.infoValue}>{profile.email}</Text>}
               </View>
             </View>
 
