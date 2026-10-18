@@ -161,8 +161,9 @@ export function InvoiceForm({
     }
     if (!form.invoiceNumber.trim()) {
       errors.push('Введіть номер рахунку');
-    } else if (!/^\d{4}-\d{2}-\d{4}$/.test(form.invoiceNumber)) {
-      errors.push('Номер рахунку має бути у форматі 2026-10-0001');
+    } else if (!isEdit && !/^\d{4}-\d{2}-\d{4}$/.test(form.invoiceNumber)) {
+      // Валідація тільки для create mode
+      errors.push('Номер має бути у форматі 2026-10-0001');
     }
     if (!form.invoiceDate) {
       errors.push('Виберіть дату');
@@ -313,7 +314,11 @@ export function InvoiceForm({
               required
               pattern="\d{4}-\d{2}-\d{4}"
               title="Формат: 2026-10-0001"
-              hint="Формат: РІК-МІСЯЦЬ-НОМЕР"
+              hint={
+                isEdit ? 'Можна змінити (наприклад, виправити помилку)' : 'Генерується автоматично'
+              }
+              readOnly={!isEdit}
+              disabled={!isEdit}
             />
             <Input
               label="Дата рахунку *"
