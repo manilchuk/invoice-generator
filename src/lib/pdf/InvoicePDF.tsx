@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 20,
+    marginBottom: 20, // Відступ до заголовка "Рахунок-фактура"
   },
   headerLeft: {
     flexDirection: 'column',
@@ -63,19 +63,31 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  // === INFO ROW ===
+  // === INFO ROW (Ліва частина з реквізитами) ===
   infoRow: {
     flexDirection: 'row',
-    marginBottom: 10,
+    marginBottom: 6, // Зменшили відступ між рядками
   },
   infoLabel: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: 'bold',
-    width: 110,
+    width: 85, // Фіксована ширина для "Постачальник:", "Одержувач:"
+    flexShrink: 0,
+    paddingRight: 4,
+  },
+  infoValueBlock: {
+    flex: 1,
+    paddingRight: 20, // Відступ справа, щоб текст не прилипав до правого краю
   },
   infoValue: {
-    fontSize: 10,
-    flex: 1,
+    fontSize: 9,
+    color: '#374151',
+    marginBottom: 1,
+  },
+  infoValueBold: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    marginBottom: 1,
   },
 
   // === TABLE ===
@@ -257,24 +269,54 @@ export function InvoicePDF({ profile, client, invoice }: InvoicePDFProps) {
       creator="InvoiceFlow"
     >
       <Page size="A4" style={styles.page}>
-        {/* ============ HEADER (ЛОГО + РЕКВІЗИТИ) ============ */}
+        {/* ============ HEADER ============ */}
         <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            {profile.logo_url && <Image src={profile.logo_url} style={styles.logo} />}
-            <Text style={styles.companyName}>{profile.company_name ?? 'Без назви'}</Text>
-            {profile.tax_id && (
-              <Text style={styles.companyDetail}>ІПН/ЄДРПОУ: {profile.tax_id}</Text>
-            )}
-            {profile.address && <Text style={styles.companyDetail}>{profile.address}</Text>}
-            {profile.iban && <Text style={styles.companyDetail}>IBAN: {profile.iban}</Text>}
-            {profile.bank_name && (
-              <Text style={styles.companyDetail}>Банк: {profile.bank_name}</Text>
-            )}
-            {profile.email && <Text style={styles.companyDetail}>{profile.email}</Text>}
-          </View>
+          {/* ЛІВА КОЛОНКА: Логотип + Реквізити */}
+          <View style={{ flex: 1, paddingRight: 20 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+              {profile.logo_url && <Image src={profile.logo_url} style={styles.logo} />}
+            </View>
 
-          <View style={styles.headerRight}>
-            {profile.phone && <Text style={styles.companyDetail}>тел. {profile.phone}</Text>}
+            {/* Постачальник */}
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Постачальник:</Text>
+              <View style={styles.infoValueBlock}>
+                <Text style={styles.infoValueBold}>{profile.company_name ?? '—'}</Text>
+                {profile.address && <Text style={styles.infoValue}>{profile.address}</Text>}
+                {profile.tax_id && (
+                  <Text style={styles.infoValue}>РНОКПП/ЄДРПОУ: {profile.tax_id}</Text>
+                )}
+                {profile.iban && <Text style={styles.infoValue}>р/р {profile.iban}</Text>}
+                {profile.bank_name && (
+                  <Text style={styles.infoValue}>Банк {profile.bank_name}</Text>
+                )}
+              </View>
+            </View>
+
+            {/* Одержувач */}
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Одержувач:</Text>
+              <View style={styles.infoValueBlock}>
+                <Text style={styles.infoValueBold}>{client ? client.name : '—'}</Text>
+                {client?.address && <Text style={styles.infoValue}>{client.address}</Text>}
+                {client?.tax_id && <Text style={styles.infoValue}>ІПН: {client.tax_id}</Text>}
+                {client?.email && <Text style={styles.infoValue}>Email: {client.email}</Text>}
+              </View>
+            </View>
+
+            {/* Платник */}
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Платник:</Text>
+              <Text style={styles.infoValueBold}>{client ? client.name : '—'}</Text>
+            </View>
+
+            {/* Сплатити до */}
+            {invoice.due_date && (
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Сплатити до:</Text>
+                <Text style={styles.infoValue}>{formatDate(invoice.due_date)}</Text>
+              </View>
+            )}
           </View>
         </View>
 
@@ -283,22 +325,6 @@ export function InvoicePDF({ profile, client, invoice }: InvoicePDFProps) {
           <Text style={styles.title}>Рахунок-фактура № {invoice.invoice_number}</Text>
           <Text style={styles.titleDate}>від {formatDate(invoice.invoice_date)}</Text>
         </View>
-
-        {/* ============ INFO: ПЛАТНИК + СТРОК ============ */}
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Платник:</Text>
-          <Text style={styles.infoValue}>
-            {client ? client.name : '—'}
-            {client?.tax_id ? ` (ІПН: ${client.tax_id})` : ''}
-          </Text>
-        </View>
-
-        {invoice.due_date && (
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Сплатити до:</Text>
-            <Text style={styles.infoValue}>{formatDate(invoice.due_date)}</Text>
-          </View>
-        )}
 
         {/* ============ TABLE ============ */}
         <View style={styles.table}>
