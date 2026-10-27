@@ -19,6 +19,9 @@ export const metadata: Metadata = {
     default: 'InvoiceFlow — генератор рахунків для ФОП та фрілансерів',
     template: '%s | InvoiceFlow',
   },
+  alternates: {
+    canonical: './',
+  },
   description:
     'Створюйте професійні PDF-рахунки за 30 секунд. Реквізити, клієнти, логотип — усе в одному місці.',
   keywords: ['рахунок', 'invoice', 'ФОП', 'фрілансер', 'PDF', 'бухгалтерія'],
