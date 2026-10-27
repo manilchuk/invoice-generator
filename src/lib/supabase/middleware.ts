@@ -36,11 +36,14 @@ export async function updateSession(request: NextRequest) {
   const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password', '/auth'];
   const isPublicPath = publicPaths.some((path) => request.nextUrl.pathname.startsWith(path));
 
+  // Головна сторінка (лендінг) — публічна
+  const isLanding = request.nextUrl.pathname === '/';
+
   // === Статичні файли (sitemap.xml, robots.txt, favicon.ico, opengraph-image.png, тощо) ===
   const isStaticFile = /\.[a-zA-Z0-9]+$/.test(request.nextUrl.pathname);
 
   // === Якщо не залогований і на захищеній сторінці — редірект на /login ===
-  if (!user && !isPublicPath && !isStaticFile) {
+  if (!user && !isPublicPath && !isStaticFile && !isLanding) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
