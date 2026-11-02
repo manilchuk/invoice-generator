@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server';
 import { LogoutButton } from '@/components/dashboard/LogoutButton';
 import { SupportButton } from '@/components/dashboard/SupportButton';
 import { DonateButton } from '@/components/ui/DonateButton';
+import { MobileMenu } from '@/components/dashboard/MobileMenu';
 import styles from './dashboard.module.css';
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
@@ -26,6 +27,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           Invoice<span>Flow</span>
         </Link>
 
+        {/* ДЕСКТОПНА НАВІГАЦІЯ (схована на мобільному через CSS) */}
         <nav className={styles.nav}>
           <Link href="/dashboard" className={styles.navLink}>
             Рахунки
@@ -40,12 +42,20 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           )}
         </nav>
 
+        {/* ДЕСКТОПНЕ МЕНЮ КОРИСТУВАЧА */}
         <div className={styles.userMenu}>
           <SupportButton />
           <DonateButton variant="compact" />
           <span className={styles.userEmail}>{user.email}</span>
           <LogoutButton />
         </div>
+
+        {/* МОБІЛЬНЕ БУРГЕР-МЕНЮ */}
+        <MobileMenu userEmail={user.email ?? ''} isAdmin={user.email === process.env.ADMIN_EMAIL}>
+          <SupportButton />
+          <DonateButton />
+          <LogoutButton />
+        </MobileMenu>
       </header>
 
       <main className={styles.main}>{children}</main>
