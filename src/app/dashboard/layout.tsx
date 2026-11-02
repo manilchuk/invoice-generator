@@ -4,7 +4,8 @@ import { connection } from 'next/server';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { LogoutButton } from '@/components/dashboard/LogoutButton';
-import { SupportButton } from '@/components/ui/SupportButton';
+import { SupportButton } from '@/components/dashboard/SupportButton';
+import { DonateButton } from '@/components/ui/DonateButton';
 import styles from './dashboard.module.css';
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
@@ -40,7 +41,8 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         </nav>
 
         <div className={styles.userMenu}>
-          <SupportButton variant="compact" />
+          <SupportButton />
+          <DonateButton variant="compact" />
           <span className={styles.userEmail}>{user.email}</span>
           <LogoutButton />
         </div>

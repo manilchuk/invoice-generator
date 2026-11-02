@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { SupportButton } from '@/components/ui/SupportButton';
+import { DonateButton } from '@/components/ui/DonateButton';
 import styles from './auth.module.css';
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
@@ -11,7 +11,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         </div>
         {children}
         <div className={styles.authFooter}>
-          <SupportButton />
+          <DonateButton />
         </div>
       </div>
     </div>

@@ -1,10 +1,10 @@
-import styles from './SupportButton.module.css';
+import styles from './DonateButton.module.css';
 
-interface SupportButtonProps {
+interface DonateButtonProps {
   variant?: 'default' | 'compact';
 }
 
-export function SupportButton({ variant = 'default' }: SupportButtonProps) {
+export function DonateButton({ variant = 'default' }: DonateButtonProps) {
   const supportUrl = process.env.NEXT_PUBLIC_SUPPORT_URL;
 
   // Якщо змінна не налаштована — не показуємо кнопку
