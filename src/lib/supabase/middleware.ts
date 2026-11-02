@@ -33,7 +33,14 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // === Публічні шляхи (сторінки, доступні без логіну) ===
-  const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password', '/auth'];
+  const publicPaths = [
+    '/login',
+    '/register',
+    '/forgot-password',
+    '/reset-password',
+    '/auth',
+    '/invoice-guide',
+  ];
   const isPublicPath = publicPaths.some((path) => request.nextUrl.pathname.startsWith(path));
 
   // Головна сторінка (лендінг) — публічна
